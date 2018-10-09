@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.kanedafromparis</groupId>
     <artifactId>prez-fabric8-dmp</artifactId>
-    <version>0.0.3-SNAPSHOT</version>
+    <version>0.0.4-SNAPSHOT</version>
     <packaging>jar</packaging>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -56,7 +56,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>            
-            <scope>test</scope>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
@@ -76,6 +76,95 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.27.1</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <resources>
+                        <labels> 
+                            <all> 
+                                <property> 
+                                    <name>artifactId</name>
+                                    <value>${project.artifactId}</value>
+                                </property>
+                                <property> 
+                                    <name>version</name>
+                                    <value>${project.version}</value>
+                                </property>
+                            </all>
+                        </labels>
+                        <annotations>          
+                        </annotations>
+                    </resources>
+                    <images>
+                        <image>                            
+                            <name>kanedafromparis/${project.artifactId}:${project.version}</name>
+                            <build> 
+                                <from>adoptopenjdk/openjdk8:jdk8u172-b11-alpine-slim</from>
+                                <assembly>
+                                    <mode>dir</mode>
+                                    <targetDir>/opt/${project.artifactId}</targetDir>
+                                    <descriptor>../assembly/docker-assembly.xml</descriptor>
+                                </assembly>
+                                <maintainer />
+                                <workdir>/opt/${project.artifactId}</workdir>
+                                <env>
+                                    <JVM_OPTIONS>-Djava.security.egd=file:/dev/./urandom 
+                                        -XX:MaxRAMFraction=2 
+                                        -XshowSettings:vm
+                                    </JVM_OPTIONS>
+                                </env>
+                                <labels>
+                                    <version>${project.version}</version>
+                                    <artifactId>${project.artifactId}</artifactId>
+                                </labels>
+                                <healthCheck>
+                                    <!-- Check every 2 minutes -->
+                                    <interval>2m</interval>
+                                    <!-- Fail if no response after 3 seconds -->
+                                    <timeout>3s</timeout>
+                                    <!-- Allow 10 minutes for the container to start before being flagged as unhealthy -->
+                                    <startPeriod>10m</startPeriod>
+                                    <!-- Fail 3 times until the container is considerd unhealthy -->
+                                    <retries>3</retries>
+                                    <!-- Command to execute in shell form -->
+                                    <cmd>curl -f http://localhost:8080/ || exit 1</cmd>
+                                </healthCheck>
+                                <user>1001</user>
+                                <entryPoint>
+                                    <shell>
+                                        java $JVM_OPTIONS \
+                                        -jar /opt/${project.artifactId}/${project.artifactId}-${project.version}.jar                                        
+                                    </shell>                                    
+                                </entryPoint>
+                                
+                            </build>
+                            <run>
+                                <ports>
+                                    <port>8888:8080</port>
+                                </ports>
+                                <log>
+                                    <prefix>Todo-</prefix>
+                                    <date>ISO8601</date>
+                                    <color>blue</color>
+                                </log>
+                                <user>1001</user>
+                                <wait> 
+                                    <http>
+                                        <url>http://${docker.host.address}:8888</url>
+                                        <method>GET</method>
+                                        <status>200..399</status>
+                                    </http>
+                                    <healthy>true</healthy>
+                                    <time>50000</time>
+                                </wait> 
+                            </run>
+                        </image>
+                    </images>
+                </configuration>                
             </plugin>
         </plugins>
     </build>
