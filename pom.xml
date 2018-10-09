@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.kanedafromparis</groupId>
     <artifactId>prez-fabric8-dmp</artifactId>
-    <version>0.0.5-SNAPSHOT</version>
+    <version>0.0.6-SNAPSHOT</version>
     <packaging>jar</packaging>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -79,104 +79,13 @@
             </plugin>
             <plugin>
                 <groupId>io.fabric8</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>0.27.1</version>
-                <extensions>true</extensions>
+                <artifactId>fabric8-maven-plugin</artifactId> 
+                <version>3.5.41</version>
                 <configuration>
-                    <docker.autoCreateCustomNetworks>true</docker.autoCreateCustomNetworks>
-                    <resources>
-                        <labels> 
-                            <all> 
-                                <property> 
-                                    <name>artifactId</name>
-                                    <value>${project.artifactId}</value>
-                                </property>
-                                <property> 
-                                    <name>version</name>
-                                    <value>${project.version}</value>
-                                </property>
-                            </all>
-                        </labels>
-                        <annotations>          
-                        </annotations>
-                    </resources>
-                    <images>
-                        <image>                            
-                            <name>mariadb:10.3.10</name>
-                            <alias>mariadb</alias>
-                            <run>
-                                <env>
-                                    <MYSQL_USER>springuser</MYSQL_USER>
-                                    <MYSQL_PASSWORD>mypassword-quoor-uHoe7z</MYSQL_PASSWORD>
-                                    <MYSQL_DATABASE>db_todo</MYSQL_DATABASE>
-                                    <MYSQL_ROOT_PASSWORD>r00t-aeKie8ahWai_</MYSQL_ROOT_PASSWORD>
-                                </env>
-                                <ports>
-                                    <port>3306:3306</port>
-                                </ports>
-                                <log>
-                                    <prefix>mariadb-</prefix>
-                                    <date>ISO8601</date>
-                                    <color>green</color>
-                                </log>
-                                <wait> 
-                                    <log>mysqld: ready for connections.</log>
-                                    <time>20000</time>
-                                </wait>                                
-                            </run>                                
-                        </image>
-                        <image>                            
-                            <name>kanedafromparis/${project.artifactId}:${project.version}</name>
-                            <build> 
-                                <from>adoptopenjdk/openjdk8:jdk8u172-b11-alpine-slim</from>
-                                <assembly>
-                                    <mode>dir</mode>
-                                    <targetDir>/opt/${project.artifactId}</targetDir>
-                                    <descriptor>../assembly/docker-assembly.xml</descriptor>
-                                </assembly>
-                                <maintainer />
-                                <workdir>/opt/${project.artifactId}</workdir>
-                                <env>
-                                    <JVM_OPTIONS>-Djava.security.egd=file:/dev/./urandom 
-                                        -XX:MaxRAMFraction=2 
-                                        -XshowSettings:vm
-                                    </JVM_OPTIONS>                                    
-                                </env>
-                                <labels>
-                                    <version>${project.version}</version>
-                                    <artifactId>${project.artifactId}</artifactId>
-                                </labels>
-                              
-                                <user>1001</user>
-                                <entryPoint>
-                                    <shell>
-                                        java $JVM_OPTIONS \
-                                        -Dspring.config.location=/opt/${project.artifactId}/conf/application.properties \
-                                        -jar /opt/${project.artifactId}/${project.artifactId}-${project.version}.jar                                   
-                                    </shell>                                    
-                                </entryPoint>
-                            </build>
-                            <run>                                
-                                <dependsOn>
-                                    <container>mariadb</container>
-                                </dependsOn>
-                                <links> 
-                                    <link>mariadb:mariadb</link>
-                                </links>
-                                <ports>
-                                    <port>8888:8080</port>
-                                </ports>
-                                <log>
-                                    <prefix>Todo-</prefix>
-                                    <date>ISO8601</date>
-                                    <color>blue</color>
-                                </log>
-                                <user>1001</user>
-                                
-                            </run>
-                        </image>
-                    </images>
-                </configuration>                
+                    <buildRecreate>none</buildRecreate>
+                    <mode>kubernetes</mode>
+                    <namespace>${project.artifactId}</namespace>
+                </configuration>
             </plugin>
         </plugins>
     </build>
