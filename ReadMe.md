@@ -1,14 +1,14 @@
-# 2 - Use mariadb via a docker instance
+# 3 - Build a docker image from our projet and use mariadb with docker-compose
 ## Reminder
 
 This application is created in order to introduce [https://dmp.fabric8.io/](fabric8io/docker-maven-plugin)
 
-At this step we want to add a database via docker
+At this step we want to create a docker image of our project and make it works with mariadb within the same docker network
 
 
-## Sample To Do List web application using Spring Boot (and Mariadb)
+## Sample To Do List web application using Spring Boot, Mariadb using docker-compose
 
-### This is a simple Todo list application using Spring Boot (Spring JPA, Thymeleaf template)
+### This is a simple Todo list application using Spring Boot (Spring JPA, Thymeleaf template, Mariadb, )
 
 1. instantiate a local mariadb
 
@@ -17,15 +17,7 @@ At this step we want to add a database via docker
 
   1.2. (optional) 
 `eval $(docker-machine env prez-fabric8-dmp) && \`
-`docker-machine ip prez-fabric8-dmp`
-
->  1.3. `docker run --name todo-mariadb \`
-`  -e MYSQL_USER=springuser \`
-`  -e MYSQL_PASSWORD=mypassword-quoor-uHoe7z \`
-`  -e MYSQL_DATABASE=db_todo \`
-`  -e MYSQL_ROOT_PASSWORD=r00t-aeKie8ahWai_ \`
-`  -p 3306:3306 \`   
-`  -d mariadb:10.3.10`
+`docker-machine ip prez-fabric8-dmp `
 
 2. create basic project files
 
@@ -33,18 +25,24 @@ At this step we want to add a database via docker
     - [pom.xml](pom.xml) update version and dependency
     - [src/main/resources/templates/index.html](src/main/resources/templates/index.html) update version
 
-  2.2. create [src/main/resources/application.mariadb.properties](src/main/resources/application.mariadb.properties) with correct docker ip
+  2.2. create project [Dockerfile](Dockerfile)
 
-  2.3. `mvn clean package`
+  2.3. create a application config file [src/main/resources/application.mariadb.compose.properties](application.properties)
 
-  2.4. `mvn spring-boot:run -Dspring.config.location=$(pwd)/src/main/resources/application.mariadb.properties`
+  2.4. create project [docker-compose.yml](docker-compose.yml)
+
+  2.5. `mvn clean package`
+  
+  2.6. `docker-compose build`
+
+  2.7. `docker-compose up `
 
 3. Check project 
 
-   3.1. Open a web browser to [http://127.0.0.1:8080](http://127.0.0.1:8080)
+   3.1. Open a web browser to [http://$(docker-machine ip prez-fabric8-dmp):8080](http://192.168.99.100:8080)
 
-   3.2. check you database mouvement with
-`watch -n 2 bash src/main/bash/showtables.sh`
+   3.2. check your database mouvement with
+   `watch -n 2 bash showtables.sh`
 
 ## Next Step
-Create a docker image and a docker-compose
+Let's replace all this a dedicate maven-plugin

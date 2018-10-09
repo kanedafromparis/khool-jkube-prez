@@ -10,10 +10,7 @@
 #`eval $(docker-machine env prez-fabric8-dmp) && \`
 #`docker-machine ip prez-fabric8-dmp `
 
-
-docker run -it \
-    --link todo-mariadb:mysql \
-    --rm mariadb:10.3.10 \
+docker exec -it \
+    todo-compose-mariadb \
     sh -c 'echo "select * from todo_item;" | \
-    mysql -h"$MYSQL_PORT_3306_TCP_ADDR" -P"$MYSQL_PORT_3306_TCP_PORT" \
-    -uroot -p"$MYSQL_ENV_MYSQL_ROOT_PASSWORD" db_todo'
+    mysql -uroot -p"$MYSQL_ROOT_PASSWORD" db_todo'

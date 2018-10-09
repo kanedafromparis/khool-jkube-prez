@@ -1,0 +1,23 @@
+version: '3'
+services:
+  springboot:
+    restart: always
+    container_name: prez-compose-fabric8-dmp
+    image: kanedafromparis/prez-fabric8-dmp:0.0.3-SNAPSHOT
+    ports:
+      - "8080:8080"
+    build: .
+    #working_dir: .
+    depends_on:
+      - mariadb
+  mariadb:
+    restart: always
+    container_name: todo-compose-mariadb
+    image: mariadb:10.3.10
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_USER=springuser
+      - MYSQL_PASSWORD=mypassword-quoor-uHoe7z
+      - MYSQL_DATABASE=db_todo
+      - MYSQL_ROOT_PASSWORD=r00t-aeKie8ahWai_
