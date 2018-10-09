@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.kanedafromparis</groupId>
     <artifactId>prez-fabric8-dmp</artifactId>
-    <version>0.0.4-SNAPSHOT</version>
+    <version>0.0.5-SNAPSHOT</version>
     <packaging>jar</packaging>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -83,6 +83,7 @@
                 <version>0.27.1</version>
                 <extensions>true</extensions>
                 <configuration>
+                    <docker.autoCreateCustomNetworks>true</docker.autoCreateCustomNetworks>
                     <resources>
                         <labels> 
                             <all> 
@@ -101,6 +102,30 @@
                     </resources>
                     <images>
                         <image>                            
+                            <name>mariadb:10.3.10</name>
+                            <alias>mariadb</alias>
+                            <run>
+                                <env>
+                                    <MYSQL_USER>springuser</MYSQL_USER>
+                                    <MYSQL_PASSWORD>mypassword-quoor-uHoe7z</MYSQL_PASSWORD>
+                                    <MYSQL_DATABASE>db_todo</MYSQL_DATABASE>
+                                    <MYSQL_ROOT_PASSWORD>r00t-aeKie8ahWai_</MYSQL_ROOT_PASSWORD>
+                                </env>
+                                <ports>
+                                    <port>3306:3306</port>
+                                </ports>
+                                <log>
+                                    <prefix>mariadb-</prefix>
+                                    <date>ISO8601</date>
+                                    <color>green</color>
+                                </log>
+                                <wait> 
+                                    <log>mysqld: ready for connections.</log>
+                                    <time>20000</time>
+                                </wait>                                
+                            </run>                                
+                        </image>
+                        <image>                            
                             <name>kanedafromparis/${project.artifactId}:${project.version}</name>
                             <build> 
                                 <from>adoptopenjdk/openjdk8:jdk8u172-b11-alpine-slim</from>
@@ -115,34 +140,29 @@
                                     <JVM_OPTIONS>-Djava.security.egd=file:/dev/./urandom 
                                         -XX:MaxRAMFraction=2 
                                         -XshowSettings:vm
-                                    </JVM_OPTIONS>
+                                    </JVM_OPTIONS>                                    
                                 </env>
                                 <labels>
                                     <version>${project.version}</version>
                                     <artifactId>${project.artifactId}</artifactId>
                                 </labels>
-                                <healthCheck>
-                                    <!-- Check every 2 minutes -->
-                                    <interval>2m</interval>
-                                    <!-- Fail if no response after 3 seconds -->
-                                    <timeout>3s</timeout>
-                                    <!-- Allow 10 minutes for the container to start before being flagged as unhealthy -->
-                                    <startPeriod>10m</startPeriod>
-                                    <!-- Fail 3 times until the container is considerd unhealthy -->
-                                    <retries>3</retries>
-                                    <!-- Command to execute in shell form -->
-                                    <cmd>curl -f http://localhost:8080/ || exit 1</cmd>
-                                </healthCheck>
+                              
                                 <user>1001</user>
                                 <entryPoint>
                                     <shell>
                                         java $JVM_OPTIONS \
-                                        -jar /opt/${project.artifactId}/${project.artifactId}-${project.version}.jar                                        
+                                        -Dspring.config.location=/opt/${project.artifactId}/conf/application.properties \
+                                        -jar /opt/${project.artifactId}/${project.artifactId}-${project.version}.jar                                   
                                     </shell>                                    
                                 </entryPoint>
-                                
                             </build>
-                            <run>
+                            <run>                                
+                                <dependsOn>
+                                    <container>mariadb</container>
+                                </dependsOn>
+                                <links> 
+                                    <link>mariadb:mariadb</link>
+                                </links>
                                 <ports>
                                     <port>8888:8080</port>
                                 </ports>
@@ -152,15 +172,7 @@
                                     <color>blue</color>
                                 </log>
                                 <user>1001</user>
-                                <wait> 
-                                    <http>
-                                        <url>http://${docker.host.address}:8888</url>
-                                        <method>GET</method>
-                                        <status>200..399</status>
-                                    </http>
-                                    <healthy>true</healthy>
-                                    <time>50000</time>
-                                </wait> 
+                                
                             </run>
                         </image>
                     </images>

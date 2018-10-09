@@ -21,5 +21,12 @@
                 <exclude>NOTICE.txt</exclude>
             </excludes>-->
         </fileSet>
+        <fileSet>
+            <directory>${basedir}/src/main/conf/</directory>
+            <includes>
+                <include>application.properties</include>                
+            </includes>
+            <outputDirectory>conf</outputDirectory>
+        </fileSet>
     </fileSets>
 </assembly>
