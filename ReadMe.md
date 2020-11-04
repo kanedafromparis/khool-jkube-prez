@@ -1,7 +1,7 @@
 # 0 - Welcom
 ## Introduction
 
-This application is created in order to introduce [https://dmp.fabric8.io/](fabric8io/docker-maven-plugin) and [http://maven.fabric8.io/](fabric8io/fabric8-maven-plugin)
+This application was created in order to introduce [https://dmp.fabric8.io/](fabric8io/docker-maven-plugin) and [http://maven.fabric8.io/](fabric8io/fabric8-maven-plugin) it has been update to [jkube/docs/kubernetes-maven-plugin](Eclispe jkube) 
 
 ## Checkout
 
