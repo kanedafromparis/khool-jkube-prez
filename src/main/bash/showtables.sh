@@ -9,6 +9,8 @@
 # docker-machine create prez-fabric8-dmp`
 #`eval $(docker-machine env prez-fabric8-dmp) && \`
 #`docker-machine ip prez-fabric8-dmp `
+#
+#eval $(minikube -p khool-jkube-prez docker-env)
 
 
 docker run -it \
