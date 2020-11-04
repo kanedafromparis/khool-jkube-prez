@@ -3,7 +3,7 @@ services:
   springboot:
     restart: always
     container_name: prez-compose-fabric8-dmp
-    image: kanedafromparis/prez-fabric8-dmp:0.0.3-SNAPSHOT
+    image: kanedafromparis/prez-fabric8-dmp:0.1.3-SNAPSHOT
     ports:
       - "8080:8080"
     build: .
