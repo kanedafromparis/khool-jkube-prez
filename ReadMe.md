@@ -1,25 +1,35 @@
 # 3 - Build a docker image from our projet and use mariadb with docker-compose
+
 ## Reminder
 
-This application is created in order to introduce [https://dmp.fabric8.io/](fabric8io/docker-maven-plugin)
-
+This application was created in order to introduce [fabric8io/docker-maven-plugin](https://dmp.fabric8.io/) and [fabric8io/fabric8-maven-plugin](http://maven.fabric8.io/) it has been update to [Eclipse jkube](https://www.eclipse.org/jkube/docs/kubernetes-maven-plugin).
 At this step we want to create a docker image of our project and make it works with mariadb within the same docker network
-
 
 ## Sample To Do List web application using Spring Boot, Mariadb using docker-compose
 
 ### This is a simple Todo list application using Spring Boot (Spring JPA, Thymeleaf template, Mariadb, )
 
-1. instantiate a local mariadb
+## 1. instantiate a local mariadb
 
-  1.1. (optional) 
-`docker-machine create prez-fabric8-dmp`
+  1.1. (optional)
 
-  1.2. (optional) 
-`eval $(docker-machine env prez-fabric8-dmp) && \`
-`docker-machine ip prez-fabric8-dmp `
+```bash
+minikube -p khool-jkube-prez start
+# 😄  [khool-jkube-prez] minikube v1.14.2 on Darwin 10.15.7
+# ...
+# 🏄  Done! kubectl is now configured to use "khool-jkube-prez" by default
+```
 
-2. create basic project files
+The first start need to retreive and setup the environement so i might take some time. From 2 to 15 min, depending on your configuration and your network.
+
+  1.2. (optional)
+
+```bash
+eval $(minikube -p khool-jkube-prez docker-env) && \
+minikube -p khool-jkube-prez ip
+```
+
+## 2. create basic project files
 
   2.1. update file :
     - [pom.xml](pom.xml) update version and dependency
@@ -35,14 +45,15 @@ At this step we want to create a docker image of our project and make it works w
   
   2.6. `docker-compose build`
 
-  2.7. `docker-compose up `
+  2.7. `docker-compose up`
 
-3. Check project 
+## 3. Check project
 
-   3.1. Open a web browser to [http://$(docker-machine ip prez-fabric8-dmp):8080](http://192.168.99.100:8080)
+   3.1. Open a web browser to [http://$(minikube -p khool-jkube-prez ip):8080](http://192.168.99.100:8080)
 
    3.2. check your database mouvement with
    `watch -n 2 bash showtables.sh`
 
 ## Next Step
-Let's replace all this a dedicate maven-plugin
+
+Let's replace all this a dedicate maven-plugin.
