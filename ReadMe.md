@@ -9,7 +9,7 @@ At this step we want to create a docker image of our project and make it works w
 
 ### This is a simple Todo list application using Spring Boot (Spring JPA, Thymeleaf template, Mariadb, )
 
-## 1. instantiate a local mariadb
+## 1. Set up Docker env
 
   1.1. (optional)
 
@@ -140,7 +140,7 @@ mvn k8s:deploy -Djkube.namespace=prez-fabric8-dmp
 ## 4. Check project
 
    4.1 check pods
-   `kubectl port-forward $(kubectl get po -l app=prez-fabric8-dmp -o name) 8080:8080`
+   `kubectl -n prez-fabric8-dmp port-forward $(kubectl get po -l app=prez-fabric8-dmp -n prez-fabric8-dmp -o name) 8080:8080`
 
    4.1 map pod port to local host
    `kubectl port-forward $(kubectl get po -l app=prez-fabric8-dmp -o name) 8080:8080`
