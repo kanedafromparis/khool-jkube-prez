@@ -1,15 +1,16 @@
-# 7 - Build the default application image using fabric8-maven-plugin and push it into kubernetes (h2 database)
+# 8 - Build the default application and deploy the full project into kubernetes
 
 ## Reminder
 
 This application was created in order to introduce [fabric8io/docker-maven-plugin](https://dmp.fabric8.io/) and [fabric8io/fabric8-maven-plugin](http://maven.fabric8.io/) it has been update to [Eclipse jkube](https://www.eclipse.org/jkube/docs/kubernetes-maven-plugin).
-At this step we want to create a docker image of our project and make it works with mariadb within the same docker network
+
+At this step we want to create an OCI image of our project and deploy it with its deployement dependencies into kubernetes
 
 ## Sample To Do List web application using Spring Boot, Mariadb using docker-compose
 
 ### This is a simple Todo list application using Spring Boot (Spring JPA, Thymeleaf template, Mariadb, )
 
-## 1. Set up Docker env
+## 1. Set up minikub env
 
   1.1. (optional)
 
@@ -28,6 +29,19 @@ The first start need to retreive and setup the environement so i might take some
 eval $(minikube -p khool-jkube-prez docker-env) && \
 minikube -p khool-jkube-prez ip
 ```
+
+  1.3. (optional)
+
+```bash
+minikube -p khool-jkube-prez addons enable ingress
+# 🔎  Verifying ingress addon...
+# 🌟  The 'ingress' addon is enabled
+minikube -p khool-jkube-prez addons enable ingress-dns
+# 🌟  The 'ingress-dns' addon is enabled
+```
+
+For more set-up detail look in to the [project]( https://github.com/kubernetes/minikube/tree/master/deploy/addons/ingress-dns)
+
 
 ## 2. Udpate and project files
 
@@ -153,3 +167,5 @@ mvn k8s:deploy -Djkube.namespace=prez-fabric8-dmp
 ## Next Step
 
 Now let's build our image.
+k -n prez-fabric8-dmp delete po -l db!=mariadb
+k -n prez-fabric8-dmp get ing
