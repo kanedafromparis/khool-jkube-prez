@@ -1,0 +1,10 @@
+apiVersion: v1
+data:
+  SPRING_MAIN_BANNER-MODE: ${app.spring.main.banner-mode}
+  SPRING_JPA_HIBERNATE_DDL-AUTO: ${app.spring.jpa.hibernate.ddl-auto}
+  SPRING_DATASOURCE_URL: ${app.spring.datasource.url}
+  SPRING_DATASOURCE_DRIVER-CLASS-NAME: ${app.spring.datasource.driver-class-name}
+  SPRING_DATASOURCE_USERNAME: ${app.spring.datasource.username}
+kind: ConfigMap
+metadata:
+  name: spring-app

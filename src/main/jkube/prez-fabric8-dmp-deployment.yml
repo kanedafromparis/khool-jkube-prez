@@ -1,0 +1,72 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    replicas: ${app.hpa.minReplicas}
+  labels:
+    app: ${project.artifactId}
+  name: ${project.artifactId}
+spec:
+  replicas: 2
+  template:
+    spec:
+      livenessProbe:
+        httpGet:
+          path: /
+          port: 8080
+        initialDelaySeconds: 15  
+        failureThreshold: 1
+        periodSeconds: 10
+      startupProbe:
+        httpGet:
+          path: /
+          port: 8080
+        failureThreshold: 30
+        periodSeconds: 10
+      volumes:
+      - name: config-volume
+        configMap:
+          name: spring-app
+      containers:
+      - env:
+        - name: KUBERNETES_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom: 
+            secretKeyRef:
+              name: spring-app
+              key: SPRING_DATASOURCE_PASSWORD
+        - name: SPRING_MAIN_BANNER-MODE
+          valueFrom: 
+            configMapKeyRef:
+              name: spring-app
+              key: SPRING_MAIN_BANNER-MODE
+        - name: SPRING_JPA_HIBERNATE_DDL-AUTO
+          valueFrom: 
+            configMapKeyRef:
+              name: spring-app
+              key: SPRING_JPA_HIBERNATE_DDL-AUTO
+        - name: SPRING_DATASOURCE_URL
+          valueFrom: 
+            configMapKeyRef:
+              name: spring-app
+              key: SPRING_DATASOURCE_URL
+        - name: SPRING_DATASOURCE_DRIVER-CLASS-NAME
+          valueFrom: 
+            configMapKeyRef:
+              name: spring-app
+              key: SPRING_DATASOURCE_DRIVER-CLASS-NAME
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom: 
+            configMapKeyRef:
+              name: spring-app
+              key: SPRING_DATASOURCE_USERNAME
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: config-volume
+          mountPath: /opt/${project.artifactId}/conf
+        securityContext:
+          privileged: false

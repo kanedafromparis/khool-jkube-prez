@@ -1,0 +1,50 @@
+<settings>
+    <servers>
+        <server>
+            <id>docker.io</id>
+            <username>xxxxxxxx</username>
+            <password>xxxxxxxx</password>
+        </server>
+        <server>
+            <id>quay.io</id>
+            <username>xxxxxxxx</username>
+            <password>xxxxxxxx</password>
+        </server>
+    </servers>
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <docker.registry>docker.io</docker.registry>
+                <!-- For secret in base 64 ;-)-->
+                <app.spring.mariadb.password>bXlwYXNzd29yZC1xdW9vci11SG9lN3o=</app.spring.mariadb.password>
+                <!-- For Env Variables -->
+                <app.spring.main.banner-mode>off</app.spring.main.banner-mode>
+                <app.spring.jpa.hibernate.ddl-auto>update</app.spring.jpa.hibernate.ddl-auto>
+                <app.spring.datasource.url>"jdbc:mysql://mariadb:3306/db_todo"</app.spring.datasource.url>
+                <app.spring.datasource.driver-class-name>org.mariadb.jdbc.Driver</app.spring.datasource.driver-class-name>
+                <app.spring.datasource.username>springuser</app.spring.datasource.username>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <docker.registry>quay.io</docker.registry>
+                <spring.app.mariadb.password>Seriously, you put it there ?</spring.app.mariadb.password>
+                <!-- For Env Variables -->
+                <app.spring.main.banner-mode>off</app.spring.main.banner-mode>
+                <app.spring.jpa.hibernate.ddl-auto>update</app.spring.jpa.hibernate.ddl-auto>
+                <app.spring.datasource.url>"jdbc:mysql://mariadb:3306/db_todo"</app.spring.datasource.url>
+                <app.spring.datasource.driver-class-name>org.mariadb.jdbc.Driver</app.spring.datasource.driver-class-name>
+                <app.spring.datasource.username>springuser</app.spring.datasource.username>
+
+            </properties>
+        </profile>
+    </profiles>
+</settings>
