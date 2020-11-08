@@ -3,7 +3,8 @@
 ## Reminder
 
 This application was created in order to introduce [fabric8io/docker-maven-plugin](https://dmp.fabric8.io/) and [fabric8io/fabric8-maven-plugin](http://maven.fabric8.io/) it has been update to [Eclipse jkube](https://www.eclipse.org/jkube/docs/kubernetes-maven-plugin).
-At this step we want to create a docker image of our project and make it works with mariadb within the same docker network
+
+At this step we want to create a docker image of our project and make it works with mariadb within the same docker network using only maven plugin.
 
 ## Sample To Do List web application using Spring Boot (and Mariadb)
 
@@ -45,7 +46,7 @@ minikube -p khool-jkube-prez ip
 
 ## 3. build and run our project image using
 
-  3.1. `mvn clean package`
+### 3.1. `mvn clean package`
 
 ```bash
 mvn clean package
@@ -74,7 +75,7 @@ mvn clean package
 # [INFO] ------------------------------------------------------------------------
 ```
 
-  3.2. `mvn docker:build docker:start`
+### 3.2. `mvn docker:build docker:start`
 
 ```bash
 mvn -s settings.xml docker:build docker:start
@@ -117,9 +118,9 @@ mvn -s settings.xml docker:build docker:start
 
 ## 4. Check project
 
-   4.1. Open a web browser to [http://192.168.99.100:8888](http://$(minikube -p khool-jkube-prez ip):8888)
+### 4.1. Open a web browser to [http://192.168.99.100:8888](http://$(minikube -p khool-jkube-prez ip):8888)
 
-   4.2  watch the mariadb database : `watch -n 2 bash src/main/bash/showtables.sh`
+### 4.2  watch the mariadb database : `watch -n 2 bash src/main/bash/showtables.sh`
 
 ## Next Step
 
