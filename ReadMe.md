@@ -1,4 +1,4 @@
-# 6 - Build the default application image using fabric8-maven-plugin and push it into kubernetes (h2 database)
+# 6 - Build the default application image using jKube and push it into kubernetes (h2 database)
 
 ## Reminder
 
