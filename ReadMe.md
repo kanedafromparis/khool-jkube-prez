@@ -1,4 +1,4 @@
-# 7 - Build the default application image using fabric8-maven-plugin and push it into kubernetes (h2 database)
+# 7.5 - Build the default application image using fabric8-maven-plugin with more flexibility and push it into kubernetes (h2 database)
 
 ## Reminder
 
@@ -38,9 +38,7 @@ minikube -p khool-jkube-prez ip
   
 - [src/main/resources/templates/index.html](src/main/resources/templates/index.html) update version
 
-### 2.2. create Dockerfile
-
-- [Dockerfile](Dockerfile) create our custom Dockerfile
+### 2.2. delete the Dockerfile
 
 ## 3. build and run our project image using
 
@@ -69,30 +67,43 @@ mvn k8s:build
 # [INFO] ------------------------------------------------------------------------
 ```
 
+You can check it for fun
+
+```bash
+docker images | grep kaneda
+# kanedafromparis/prez-fabric8-dmp                        0.1.7.5-SNAPSHOT        223eb066debb        15 seconds ago      247MB
+```
+
 ### 3.2.1 (optional) `mvn k8s:push`
 
 ### 3.3 `mvn k8s:resource`
 
 ```bash
-mvn k8s:resource -Djkube.namespace=prez-fabric8-dmp
+mvn k8s:resource k8s:deploy
 # [INFO] Scanning for projects...
 # [INFO]
 # [INFO] -------------< io.github.kanedafromparis:prez-fabric8-dmp >-------------
-# [INFO] Building prez-fabric8-dmp 0.1.7-SNAPSHOT
+# [INFO] Building prez-fabric8-dmp 0.1.7.5-SNAPSHOT
 # [INFO] --------------------------------[ jar ]---------------------------------
 # [INFO]
 # [INFO] --- kubernetes-maven-plugin:1.0.2:resource (default-cli) @ prez-fabric8-dmp ---
 # [INFO] k8s: Using resource templates from /../khool-jkube/src/main/jkube
 # [INFO] k8s: jkube-controller: Adding a default Deployment
-# [INFO] k8s: jkube-namespace: Adding a default Namespace: prez-fabric8-dmp
+# [INFO] k8s: jkube-healthcheck-docker: Adding readiness probe, with period 120 seconds
+# [INFO] k8s: jkube-healthcheck-docker: Adding liveness probe, with period 120 seconds
 # [INFO] k8s: jkube-revision-history: Adding revision history limit to 2
+# [INFO] ------------------------------------------------------------------------
+# [INFO] BUILD SUCCESS
+# [INFO] ------------------------------------------------------------------------
+# [INFO] Total time:  2.371 s
+# [INFO] Finished at: 2020-11-08T17:09:52+01:00
 # [INFO] ------------------------------------------------------------------------
 ```
 
-### 3.4 `mvn k8s:apply`
+### 3.4 `mvn k8s:deploy`
 
 ```bash
-mvn k8s:apply -Djkube.namespace=prez-fabric8-dmp
+mvn k8s:watch
 # [INFO] Scanning for projects...
 # [INFO]
 # [INFO] -------------< io.github.kanedafromparis:prez-fabric8-dmp >-------------
@@ -126,7 +137,6 @@ mvn k8s:apply -Djkube.namespace=prez-fabric8-dmp
 # [INFO]
 # [INFO] --- kubernetes-maven-plugin:1.0.2:deploy (default-cli) @ prez-fabric8-dmp ---
 # [INFO] k8s: Using Kubernetes at https://192.168.99.131:8443/ in namespace prez-fabric8-dmp with manifest /../khool-jkube/target/classes/META-INF/jkube/# kubernetes.yml
-# [INFO] k8s: Using namespace: prez-fabric8-dmp
 # [INFO] k8s: Updating Deployment from kubernetes.yml
 # [INFO] k8s: Updated Deployment: target/jkube/applyJson/prez-fabric8-dmp/deployment-prez-fabric8-dmp-1.# json
 # [INFO] k8s: HINT: Use the command `kubectl get pods -w` to watch your pods start up

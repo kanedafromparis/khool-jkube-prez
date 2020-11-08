@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.kanedafromparis</groupId>
     <artifactId>prez-fabric8-dmp</artifactId>
-    <version>0.1.7-SNAPSHOT</version>
+    <version>0.1.7.5-SNAPSHOT</version>
     <packaging>jar</packaging>
-     <parent>
+    <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.3.5.RELEASE</version>
@@ -64,8 +65,89 @@
                 <groupId>org.eclipse.jkube</groupId>
                 <artifactId>kubernetes-maven-plugin</artifactId>
                 <version>1.0.2</version>
+                          <configuration>
+                <isJib>false</isJib>
+                <generateRoute>false</generateRoute>
+                <resources>
+                    <labels>
+                        <all>
+                            <property>
+                                <name>artifactId</name>
+                                <value>${project.artifactId}</value>
+                            </property>
+                            <property>
+                                <name>version</name>
+                                <value>${project.version}</value>
+                            </property>
+                        </all>
+                    </labels>
+                    <annotations>
+                    </annotations>
+                </resources>
+                <images>
+                    <image>
+                        <name>kanedafromparis/${project.artifactId}:${project.version}</name>
+                        <build>
+                            <from>adoptopenjdk:11-jre-hotspot</from>
+                            <assembly>
+                                <mode>dir</mode>
+                                <targetDir>/opt/${project.artifactId}</targetDir>
+                                <inline>
+                                    <id>docker</id>
+                                    <fileSets>
+                                        <fileSet>
+                                            <directory>${basedir}/${project.build.directory}</directory>
+                                            <includes>
+                                                <include>*.jar</include>
+                                            </includes>
+                                            <outputDirectory>./lib</outputDirectory>
+                                        </fileSet>
+                                        <fileSet>
+                                            <directory>${basedir}/${project.build.directory}</directory>
+                                            <includes>
+                                                <include>${project.artifactId}-${project.version}.jar</include>
+                                            </includes>
+                                            <outputDirectory>.</outputDirectory>
+                                        </fileSet>
+                                    </fileSets>
+                                </inline>
+                            </assembly>
+                            <maintainer />
+                            <workdir>/opt/${project.artifactId}</workdir>
+                            <env>
+                                <JVM_OPTIONS>-Djava.security.egd=file:/dev/./urandom 
+                                        -XshowSettings:vm
+                                </JVM_OPTIONS>
+                            </env>
+                            <labels>
+                                <version>${project.version}</version>
+                                <artifactId>${project.artifactId}</artifactId>
+                            </labels>
+                            <healthCheck>
+                                <!-- Check every 2 minutes -->
+                                <interval>2m</interval>
+                                <!-- Fail if no response after 3 seconds -->
+                                <timeout>3s</timeout>
+                                <!-- Allow 10 minutes for the container to start before being flagged as unhealthy -->
+                                <startPeriod>10m</startPeriod>
+                                <!-- Fail 3 times until the container is considerd unhealthy -->
+                                <retries>3</retries>
+                                <!-- Command to execute in shell form -->
+                                <cmd>curl -f http://localhost:8080/ || exit 1</cmd>
+                            </healthCheck>
+                            <user>1001</user>
+                            <entryPoint>
+                                <shell>
+                                        java $JVM_OPTIONS \
+                                        -jar /opt/${project.artifactId}/${project.artifactId}-${project.version}.jar                                        
+                                </shell>
+                            </entryPoint>
+                        </build>
+                    </image>
+                </images>
+            </configuration>
             </plugin>
-        </plugins>
+          </plugins>
     </build>
 
     <!-- should it be move it to .m2/settings.xml -->
