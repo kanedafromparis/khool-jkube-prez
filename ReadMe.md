@@ -70,6 +70,27 @@ mvn clean package
 
 #### 2.2. `mvn spring-boot:run`
 
+```bash
+mvn spring-boot:run
+# [INFO] Scanning for projects...
+# ...
+# [INFO] Attaching agents: []
+# 
+#   .   ____          _            __ _ _
+#  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+# ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+#  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+#   '  |____| .__|_| |_|_| |_\__, | / / / /
+#  =========|_|==============|___/=/_/_/_/
+#  :: Spring Boot ::        (v2.3.5.RELEASE)
+# 
+# 2020-11-08 14:06:12.939  INFO 14832 --- [           main] i.g.k.prez.fabric8.dmp.Application       : Starting Application on kumite.local with PID 14832 (/../khool-jkube/target/classes started by csabourdin in /../khool-jkube)
+# 2020-11-08 14:06:12.941  INFO 14832 --- [           main] i.g.k.prez.fabric8.dmp.Application       : No active profile set, falling back to default profiles: default
+# 2020-11-08 14:06:13.340  INFO 14832 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFERRED mode.
+# ...
+# 2020-11-08 14:06:14.623  INFO 14832 --- [           main] i.g.k.prez.fabric8.dmp.Application       : Started Application in 6.951 seconds (JVM running for 7.242)
+```
+
 #### 2.3. Open a web browser to [http://127.0.0.1:8080/](http://127.0.0.1:8080)
 
 ## Next Step
