@@ -102,7 +102,7 @@ mvn k8s:resource -Djkube.namespace=prez-fabric8-dmp
 # [INFO] ------------------------------------------------------------------------
 ```
 
-  3.4 `mvn k8s:apply`
+  3.4 `mvn k8s:appply`
 
 ```bash
 mvn k8s:deploy -Djkube.namespace=prez-fabric8-dmp
