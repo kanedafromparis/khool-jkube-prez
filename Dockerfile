@@ -13,7 +13,6 @@ ENV JVM_OPTIONS="-Djava.security.egd=file:/dev/./urandom \
                  -XshowSettings:vm"
 
 RUN mkdir -p /opt/prez-fabric8-dmp/conf/
-COPY maven/src/main/conf/application-mariadb.properties /opt/prez-fabric8-dmp/conf/application.properties
 
 COPY maven/target/prez-fabric8-dmp-${ARG_VERSION}.jar /opt/prez-fabric8-dmp/prez-fabric8-dmp.jar
 USER 1001
