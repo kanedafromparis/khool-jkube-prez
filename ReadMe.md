@@ -169,6 +169,26 @@ Open a web browser to [http://127.0.0.1:8080](http://127.0.0.1:8080)
 open "http://$(minikube -p khool-jkube-prez ip):$(kubectl -n prez-fabric8-dmp get svc prez-fabric8-dmp -o json | jq .spec.ports[]?.nodePort)"
 ```
 
+### 4.5 create Helm Chart
+
+```bash
+mvn -s settings.xml k8s:helm  -Djkube.namespace=prez-fabric8-dmp
+# [INFO] Scanning for projects...
+# [INFO]
+# [INFO] -------------< io.github.kanedafromparis:prez-fabric8-dmp >-------------
+# [INFO] Building prez-fabric8-dmp 0.1.8-SNAPSHOT
+# [INFO] --------------------------------[ jar ]---------------------------------
+# [INFO]
+# [INFO] --- kubernetes-maven-plugin:1.0.2:helm (default-cli) @ prez-fabric8-dmp ---
+# [INFO] k8s: Creating Helm Chart "prez-fabric8-dmp" for Kubernetes
+# [INFO] ------------------------------------------------------------------------
+# [INFO] BUILD SUCCESS
+# [INFO] ------------------------------------------------------------------------
+# [INFO] Total time:  2.143 s
+# [INFO] Finished at: 2020-11-08T18:20:55+01:00
+# [INFO] ------------------------------------------------------------------------
+```
+
 ## Next Step
 
 Let's have fun and add ingress  ;-)
