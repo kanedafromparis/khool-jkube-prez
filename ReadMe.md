@@ -1,18 +1,19 @@
-# 8 - Build the default application and deploy the full project into kubernetes
+# 8 - Build the default application and deploy the full project into kubernetes and helm
 
 ## Reminder
 
 This application was created in order to introduce [fabric8io/docker-maven-plugin](https://dmp.fabric8.io/) and [fabric8io/fabric8-maven-plugin](http://maven.fabric8.io/) it has been update to [Eclipse jkube](https://www.eclipse.org/jkube/docs/kubernetes-maven-plugin).
 
-At this step we want to create an OCI image of our project and deploy it with its deployement dependencies into kubernetes
+At this step we want to create an OCI image of our project and deploy it with its deployment dependencies into kubernetes.
+We also will create a helm project
 
-## Sample To Do List web application using Spring Boot, Mariadb using docker-compose
+## Sample To Do List web application using Spring Boot, Mariadb into kubernetes and helm
 
-### This is a simple Todo list application using Spring Boot (Spring JPA, Thymeleaf template, Mariadb, )
+### This is a simple Todo list application using Spring Boot (Spring JPA, Thymeleaf template, Mariadb )
 
 ## 1. Set up minikub env
 
-  1.1. (optional)
+### 1.1. (optional)
 
 ```bash
 minikube -p khool-jkube-prez start
@@ -23,37 +24,40 @@ minikube -p khool-jkube-prez start
 
 The first start need to retreive and setup the environement so i might take some time. From 2 to 15 min, depending on your configuration and your network.
 
-  1.2. (optional)
+#### 1.2. (optional)
 
 ```bash
 eval $(minikube -p khool-jkube-prez docker-env) && \
 minikube -p khool-jkube-prez ip
 ```
 
-  1.3. (optional)
-
-```bash
-minikube -p khool-jkube-prez addons enable ingress
-# 🔎  Verifying ingress addon...
-# 🌟  The 'ingress' addon is enabled
-minikube -p khool-jkube-prez addons enable ingress-dns
-# 🌟  The 'ingress-dns' addon is enabled
-```
-
-For more set-up detail look in to the [project]( https://github.com/kubernetes/minikube/tree/master/deploy/addons/ingress-dns)
-
-
 ## 2. Udpate and project files
 
-  2.1. udpate files :
+### 2.1. udpate files
 
-- [pom.xml](pom.xml) update version and add docker image definition from our project, to build it
+- [pom.xml](pom.xml) update version from our project, to build it
   
 - [src/main/resources/templates/index.html](src/main/resources/templates/index.html) update version
 
-  2.2. create Dockerfile
+### 2.2. create kubernetes resource fragments
 
-- [Dockerfile](Dockerfile) create our custom Dockerfile
+- [settings.xml](settings.xml) to store some of our properties and secrets
+  
+- [application-secret.yaml](/src/main/jkube/application-secret.yaml) for storing secrets
+
+- [application-configmap.yaml](/src/main/jkube/application-configmap.yaml) for storing config informations
+
+- [mariadb-service.yml](/src/main/jkube/mariadb-service.yml) to setup mariadb service
+
+- [mariadb-statefulset.yml](/src/main/jkube/mariadb-statefulset.yml) to create mariadb statefullset
+
+- [mariadb-statefulset.yml](/src/main/jkube/mariadb-statefulset.yml) to create mariadb statefullset
+
+- [prez-fabric8-dmp-service.yaml](/src/main/jkube/prez-fabric8-dmp-service.yaml) to add custom info to our application service (ex : nodePort)
+
+- [prez-fabric8-dmp-deployment.yml](/src/main/jkube/prez-fabric8-dmp-deployment.yml) to add custom info to our application deployement (ex : nb replicats)
+
+- [application-configmap.yaml](application-configmap.yaml)for storing config informations
 
 ## 3. build and run our project image using
 
@@ -62,24 +66,28 @@ For more set-up detail look in to the [project]( https://github.com/kubernetes/m
   3.2. `mvn k8s:build`
 
 ```bash
-mvn k8s:build
-# [INFO] Scanning for projects...
-# [INFO]
-# [INFO] -------------< io.github.kanedafromparis:prez-fabric8-dmp >-------------
-# [INFO] Building prez-fabric8-dmp 0.1.7-SNAPSHOT
-# [INFO] --------------------------------[ jar ]---------------------------------
-# [INFO]
-# [INFO] --- kubernetes-maven-plugin:1.0.2:build (default-cli) @ prez-fabric8-dmp ---
-# [INFO] k8s: Running in Kubernetes mode
-# [INFO] k8s: Building Docker image in Kubernetes mode
-# [INFO] k8s: [kanedafromparis/prez-fabric8-dmp:latest]: Created docker-build.tar in 3 seconds
-# [INFO] k8s: [kanedafromparis/prez-fabric8-dmp:latest]: Built image sha256:b1120
-# [INFO] ------------------------------------------------------------------------
-# [INFO] BUILD SUCCESS
-# [INFO] ------------------------------------------------------------------------
-# [INFO] Total time:  19.377 s
-# [INFO] Finished at: 2020-08-03T00:07:26+01:00
-# [INFO] ------------------------------------------------------------------------
+mvn -s settings.xml k8s:build -Djkube.namespace=prez-fabric8-dmp
+[INFO] Scanning for projects...
+[INFO]
+[INFO] -------------< io.github.kanedafromparis:prez-fabric8-dmp >-------------
+[INFO] Building prez-fabric8-dmp 0.1.8-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- kubernetes-maven-plugin:1.0.2:build (default-cli) @ prez-fabric8-dmp ---
+[INFO] k8s: Running in Kubernetes mode
+[INFO] k8s: Building Docker image in Kubernetes mode
+[INFO] k8s: Running generator spring-boot
+[INFO] k8s: spring-boot: Using Docker image quay.io/jkube/jkube-java-binary-s2i:0.0.8 as base / builder
+[INFO] k8s: [kanedafromparis/prez-fabric8-dmp:latest] "spring-boot": Created docker-build.tar in 1 second
+[INFO] k8s: [kanedafromparis/prez-fabric8-dmp:latest] "spring-boot": Built image sha256:b24b0
+[INFO] k8s: [kanedafromparis/prez-fabric8-dmp:latest] "spring-boot": Removed old image sha256:33788
+[INFO] k8s: [kanedafromparis/prez-fabric8-dmp:latest] "spring-boot": Tag with latest
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  9.599 s
+[INFO] Finished at: 2020-11-08T17:59:29+01:00
+[INFO] ------------------------------------------------------------------------
 ```
 
   3.2.1 (optional) `mvn k8s:push`
@@ -87,7 +95,7 @@ mvn k8s:build
   3.3 `mvn k8s:resource`
 
 ```bash
-mvn k8s:resource -Djkube.namespace=prez-fabric8-dmp
+mvn -s settings.xml k8s:resource -Djkube.namespace=prez-fabric8-dmp
 # [INFO] Scanning for projects...
 # [INFO]
 # [INFO] -------------< io.github.kanedafromparis:prez-fabric8-dmp >-------------
@@ -102,70 +110,65 @@ mvn k8s:resource -Djkube.namespace=prez-fabric8-dmp
 # [INFO] ------------------------------------------------------------------------
 ```
 
-  3.4 `mvn k8s:appply`
+  3.4 `mvn k8s:apply`
 
 ```bash
-mvn k8s:deploy -Djkube.namespace=prez-fabric8-dmp
+mvn -s settings.xml k8s:apply -Djkube.namespace=prez-fabric8-dmp
 # [INFO] Scanning for projects...
 # [INFO]
 # [INFO] -------------< io.github.kanedafromparis:prez-fabric8-dmp >-------------
-# [INFO] Building prez-fabric8-dmp 0.1.7-SNAPSHOT
+# [INFO] Building prez-fabric8-dmp 0.1.8-SNAPSHOT
 # [INFO] --------------------------------[ jar ]---------------------------------
 # [INFO]
-# [INFO] >>> kubernetes-maven-plugin:1.0.2:deploy (default-cli) > install @ prez-fabric8-dmp >>>
-# [INFO]
-# [INFO] --- maven-resources-plugin:3.1.0:resources (default-resources) @ prez-fabric8-dmp ---
-# [INFO] Using 'UTF-8' encoding to copy filtered resources.
-# [INFO] Copying 2 resources
-# [INFO] Copying 1 resource
-# [INFO]
-# [INFO] --- maven-compiler-plugin:3.8.1:compile (default-compile) @ prez-fabric8-dmp ---
-# 
-# [INFO] --- maven-resources-plugin:3.1.0:testResources (default-testResources) @ prez-fabric8-dmp ---
-# ...
-# [INFO] --- maven-compiler-plugin:3.8.1:testCompile (default-testCompile) @ prez-fabric8-dmp ---
-# [INFO] Nothing to compile - all classes are up to date
-# [INFO]
-# [INFO] --- maven-surefire-plugin:2.22.2:test (default-test) @ prez-fabric8-dmp ---
-# [INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
-# ...
-# [INFO] --- maven-jar-plugin:3.2.0:jar (default-jar) @ prez-fabric8-dmp ---
-# [INFO] Building jar: /Users/csabourdin/Documents/projets/personnel/projets/khool/khool-jkube/target/# prez-fabric8-dmp-0.1.7-SNAPSHOT.jar
-# [INFO]
-# [INFO] --- spring-boot-maven-plugin:2.3.5.RELEASE:repackage (repackage) @ prez-fabric8-dmp ---
-# ...
-# [INFO] <<< kubernetes-maven-plugin:1.0.2:deploy (default-cli) < install @ prez-fabric8-dmp <<<
-# [INFO]
-# [INFO]
-# [INFO] --- kubernetes-maven-plugin:1.0.2:deploy (default-cli) @ prez-fabric8-dmp ---
-# [INFO] k8s: Using Kubernetes at https://192.168.99.131:8443/ in namespace prez-fabric8-dmp with manifest # /Users/csabourdin/Documents/projets/personnel/projets/khool/khool-jkube/target/classes/META-INF/jkube/# kubernetes.yml
+# [INFO] --- kubernetes-maven-plugin:1.0.2:apply (default-cli) @ prez-fabric8-dmp ---
+# [INFO] k8s: Using Kubernetes at https://192.168.99.131:8443/ in namespace prez-fabric8-dmp with manifest /../khool-jkube/target/classes/META-INF/jkube/kubernetes.yml
 # [INFO] k8s: Using namespace: prez-fabric8-dmp
-# [INFO] k8s: Updating Deployment from kubernetes.yml
-# [INFO] k8s: Updated Deployment: target/jkube/applyJson/prez-fabric8-dmp/deployment-prez-fabric8-dmp-1.# json
+# [INFO] k8s: Using namespace: prez-fabric8-dmp
+# [INFO] k8s: Updating Secret from kubernetes.yml
+# [INFO] k8s: Updated Secret: target/jkube/applyJson/prez-fabric8-dmp/secret-spring-app.json
+# [INFO] k8s: Creating a Service from kubernetes.yml namespace prez-fabric8-dmp name mariadb
+# [INFO] k8s: Created Service: target/jkube/applyJson/prez-fabric8-dmp/service-mariadb.json
+# [INFO] k8s: Creating a Service from kubernetes.yml namespace prez-fabric8-dmp name prez-fabric8-dmp
+# [INFO] k8s: Created Service: target/jkube/applyJson/prez-fabric8-dmp/service-prez-fabric8-dmp.json
+# [INFO] k8s: Updating ConfigMap from kubernetes.yml
+# [INFO] k8s: Updated ConfigMap: target/jkube/applyJson/prez-fabric8-dmp/configmap-spring-app.json
+# [INFO] k8s: Creating a Deployment from kubernetes.yml namespace prez-fabric8-dmp name prez-fabric8-dmp
+# [INFO] k8s: Created Deployment: target/jkube/applyJson/prez-fabric8-dmp/deployment-prez-fabric8-dmp-1.json
+# [INFO] k8s: Creating a StatefulSet from kubernetes.yml namespace prez-fabric8-dmp name mariadb
+# [INFO] k8s: Created StatefulSet: target/jkube/applyJson/prez-fabric8-dmp/statefulset-mariadb.json
 # [INFO] k8s: HINT: Use the command `kubectl get pods -w` to watch your pods start up
 # [INFO] ------------------------------------------------------------------------
 # [INFO] BUILD SUCCESS
 # [INFO] ------------------------------------------------------------------------
-# [INFO] Total time:  12.018 s
-# [INFO] Finished at: 2020-11-06T00:19:19+01:00
+# [INFO] Total time:  2.607 s
+# [INFO] Finished at: 2020-11-08T18:00:51+01:00
 # [INFO] ------------------------------------------------------------------------
 ```
 
 ## 4. Check project
 
-   4.1 check pods
-   `kubectl -n prez-fabric8-dmp port-forward $(kubectl get po -l app=prez-fabric8-dmp -n prez-fabric8-dmp -o name) 8080:8080`
+### 4.1 Check pod deployment
 
-   4.1 map pod port to local host
-   `kubectl port-forward $(kubectl get po -l app=prez-fabric8-dmp -o name) 8080:8080`
+```bash
+watch -n 2 kubectl get svc,deploy,po -o name -n prez-fabric8-dmp
+```
 
-   4.2. Open a web browser to [http://127.0.0.1:8080](http://127.0.0.1:8080)
+### 4.2 Map
 
-   4.3. Notice the specificity of the image
-   `docker images | grep kanedafromparis/prez-fabric8-dmp`
+```bash
+kubectl -n prez-fabric8-dmp port-forward $(kubectl get svc -l app=prez-fabric8-dmp -n prez-fabric8-dmp -o name) 8080:8080`
+```
+
+### 4.3 check on local
+
+Open a web browser to [http://127.0.0.1:8080](http://127.0.0.1:8080)
+
+### 4.4 check on local NodePort
+
+```bash
+open "http://$(minikube -p khool-jkube-prez ip):$(kubectl -n prez-fabric8-dmp get svc prez-fabric8-dmp -o json | jq .spec.ports[]?.nodePort)"
+```
 
 ## Next Step
 
-Now let's build our image.
-k -n prez-fabric8-dmp delete po -l db!=mariadb
-k -n prez-fabric8-dmp get ing
+Let's have fun and add ingress  ;-)
