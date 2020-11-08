@@ -3,7 +3,8 @@
 ## Reminder
 
 This application was created in order to introduce [fabric8io/docker-maven-plugin](https://dmp.fabric8.io/) and [fabric8io/fabric8-maven-plugin](http://maven.fabric8.io/) it has been update to [Eclipse jkube](https://www.eclipse.org/jkube/docs/kubernetes-maven-plugin).
-At this step we want to create a docker image of our project and make it works with mariadb within the same docker network
+
+At this step we want to create a docker image and run it using io.fabric8:docker-maven-plugin
 
 ## Sample To Do List web application using Spring Boot (and later Mariadb)
 
@@ -67,16 +68,25 @@ mvn docker:help
 
 ## 2. Udpates and project files
 
-  2.1. udpate files :
-    - [pom.xml](pom.xml) in order to set io.fabric8:docker-maven-plugin configuration for our application docker image
-    - [src/main/resources/templates/index.html](src/main/resources/templates/index.html) update version
+### 2.1. udpate files
 
-  2.1. create files :
-    - [src/main/docker/](src/main/docker/.forgit) this directory is needed by the plugin and can be use for an overide Dockerfile
-    - [src/main/assembly/docker-assembly.xml](src/main/assembly/docker-assembly.xml) maven assembly script use to build docker image
-    - [src/main/conf/application.properties](src/main/conf/application.properties) docker application properties
+- [pom.xml](pom.xml) in order to set io.fabric8:docker-maven-plugin configuration for our application docker image
 
-  2.3. (optional) remove [Dockerfile](Dockerfile) & [docker-compose.yml](docker-compose.yml)
+- [src/main/resources/templates/index.html](src/main/resources/templates/index.html) update version
+
+### 2.1. create files
+
+- [src/main/docker/](src/main/docker/.forgit) this directory is needed by the plugin and can be use for an overide Dockerfile
+
+- [src/main/assembly/docker-assembly.xml](src/main/assembly/docker-assembly.xml) maven assembly script use to build docker image
+
+- [src/main/conf/application.properties](src/main/conf/application.properties) docker application properties
+
+### 2.3. (optional) remove files
+
+- [Dockerfile](Dockerfile)
+
+- [docker-compose.yml](docker-compose.yml)
 
 ## 3. build and run our project image using
 
@@ -152,7 +162,7 @@ mvn docker:build docker:start
 
 ## 4. Check project
 
-   4.1. Open a web browser to [http://192.168.99.100:8888](http://$(minikube -p khool-jkube-prez):8888)
+### 4.1. Open a web browser to [http://192.168.99.100:8888](http://$(minikube -p khool-jkube-prez ip):8888)
 
 ## Next Step
 
