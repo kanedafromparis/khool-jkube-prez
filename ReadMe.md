@@ -69,9 +69,9 @@ minikube -p khool-jkube-prez ip
 # [INFO] ------------------------------------------------------------------------
 ```
 
-  3.2.1 (optional) `mvn k8s:push`
+### 3.2.1 (optional) `mvn k8s:push`
 
-  3.3 `mvn k8s:resource`
+### 3.3 `mvn k8s:resource`
 
 ```bash
 mvn k8s:resource
@@ -96,7 +96,7 @@ mvn k8s:resource
 # [INFO] ------------------------------------------------------------------------
 ```
 
-  3.4 `mvn k8s:apply`
+### 3.4 `mvn k8s:apply`
 
 ```bash
 mvn k8s:apply
