@@ -31,7 +31,7 @@ This is a simple Todo list application using Spring Boot (Spring JPA, Thymeleaf 
 
 #### 1.4. create the ressource files (application.properties, index.html) :
 
-- [src/main/resources/application.properties}(src/main/resources/application.properties)
+- [src/main/resources/application.properties](src/main/resources/application.properties)
 
 - [src/main/resources/templates/index.html](src/main/resources/templates/index.html)
 
